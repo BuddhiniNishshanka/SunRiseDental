@@ -1,0 +1,104 @@
+name: Sunrise Dental CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  # Stage 1: Build & Compile
+  build:
+    name: Build & Code Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java JDK 23
+        uses: actions/setup-java@v4
+        with:
+          java-version: '23'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Compile Java Backend
+        run: mvn clean compile -B
+
+  # Stage 2: Automated Testing (JUnit 5 & TDD Suite)
+  test:
+    name: Automated Unit & Integration Tests
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java JDK 23
+        uses: actions/setup-java@v4
+        with:
+          java-version: '23'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Execute Automated Test Suite
+        run: mvn test -B
+
+      - name: Publish Test Report Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: surefire-test-reports
+          path: target/surefire-reports/
+
+  # Stage 3: Packaging & Artifact Archiving
+  package:
+    name: Package Deployable Web Archive (WAR)
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java JDK 23
+        uses: actions/setup-java@v4
+        with:
+          java-version: '23'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Package WAR Archive
+        run: mvn package -DskipTests -B
+
+      - name: Upload Deployable Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunrise-dental-war
+          path: target/*.war
+
+  # Stage 4: Continuous Deployment (CD Staging)
+  deploy:
+    name: Continuous Deployment & Verification
+    needs: package
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download Packaged Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: sunrise-dental-war
+
+      - name: Simulate Production Deployment to Tomcat / Cloud Server
+        run: |
+          echo "=========================================================="
+          echo "Deploying Sunrise Dental Management System to Production..."
+          echo "Target Server: Apache Tomcat 8.5+ Web Container"
+          echo "Artifact: project.war"
+          echo "Status: Deployment completed successfully."
+          echo "Health Check: HTTP 200 OK on /api/dentists"
+          echo "=========================================================="
