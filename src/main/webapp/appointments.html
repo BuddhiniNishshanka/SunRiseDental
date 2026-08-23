@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Dental Clinic - Register Appointment</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">🦷</div>
+                <div class="brand-text">
+                    <h2>Sunrise Dental</h2>
+                    <span>Clinic Portal</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="menu-category">Operations</li>
+                <li><a href="dashboard.html"><span class="menu-icon">📊</span> Dashboard</a></li>
+                <li><a href="appointments.html" class="active"><span class="menu-icon">📅</span> Register Appointment</a></li>
+                <li><a href="search.html"><span class="menu-icon">🔍</span> Search Appointments</a></li>
+                <li><a href="billing.html"><span class="menu-icon">💳</span> Calculate &amp; Print Bill</a></li>
+
+                <li class="menu-category">Analytics &amp; Support</li>
+                <li><a href="reports.html"><span class="menu-icon">📈</span> Management Reports</a></li>
+                <li><a href="help.html"><span class="menu-icon">❓</span> Staff Help Guide</a></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar" id="userAvatar">SD</div>
+                    <div class="user-details">
+                        <h4 id="userFullName">Staff Member</h4>
+                        <span id="userRole">RECEPTIONIST</span>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()" title="Exit System">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-navbar">
+                <div class="page-title">
+                    <h1>Register New Patient Appointment</h1>
+                    <p>Collect patient demographic information, schedule dentist slot, and assign unique appointment ID</p>
+                </div>
+                <div class="top-actions">
+                    <a href="search.html" class="btn btn-secondary btn-sm">Search Existing</a>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 28px;">
+                    <!-- Registration Form -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>1. Patient &amp; Appointment Registration Form</h2>
+                        </div>
+
+                        <form id="appointmentForm" onsubmit="submitAppointment(event)">
+                            <h3 style="font-size: 1rem; color: var(--primary-dark); margin-bottom: 16px; border-bottom: 1px dashed var(--border-color); padding-bottom: 6px;">
+                                👤 Patient Personal Information
+                            </h3>
+
+                            <div class="form-grid" style="margin-bottom: 24px;">
+                                <div class="form-group full-width">
+                                    <label for="patientName">Patient Full Name <span class="required">*</span></label>
+                                    <input type="text" id="patientName" placeholder="e.g. Kamal Gunaratne" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="contactNo">Contact Number <span class="required">*</span></label>
+                                    <input type="tel" id="contactNo" placeholder="e.g. 0771234567" pattern="^(?:\+94|0)?[0-9]{9,10}$" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="email">Email Address</label>
+                                    <input type="email" id="email" placeholder="patient@example.com">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="dob">Date of Birth</label>
+                                    <input type="date" id="dob">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="gender">Gender <span class="required">*</span></label>
+                                    <select id="gender" required>
+                                        <option value="MALE">Male</option>
+                                        <option value="FEMALE">Female</option>
+                                        <option value="OTHER">Other</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label for="address">Residential Address <span class="required">*</span></label>
+                                    <textarea id="address" placeholder="e.g. No. 45/2, Galle Road, Colombo 03" required></textarea>
+                                </div>
+                            </div>
+
+                            <h3 style="font-size: 1rem; color: var(--primary-dark); margin-bottom: 16px; border-bottom: 1px dashed var(--border-color); padding-bottom: 6px;">
+                                🩺 Clinical &amp; Scheduling Details
+                            </h3>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="dentistSelect">Select Dentist / Doctor <span class="required">*</span></label>
+                                    <select id="dentistSelect" onchange="updateEstimatedCost()" required>
+                                        <option value="">-- Choose Dentist --</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="treatmentSelect">Select Treatment Type <span class="required">*</span></label>
+                                    <select id="treatmentSelect" onchange="updateEstimatedCost()" required>
+                                        <option value="">-- Choose Treatment --</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="appointmentDate">Appointment Date <span class="required">*</span></label>
+                                    <input type="date" id="appointmentDate" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="appointmentTime">Appointment Time Slot <span class="required">*</span></label>
+                                    <select id="appointmentTime" required>
+                                        <option value="09:00">09:00 AM</option>
+                                        <option value="09:30">09:30 AM</option>
+                                        <option value="10:00">10:00 AM</option>
+                                        <option value="10:30">10:30 AM</option>
+                                        <option value="11:00">11:00 AM</option>
+                                        <option value="11:30">11:30 AM</option>
+                                        <option value="14:00">02:00 PM</option>
+                                        <option value="14:30">02:30 PM</option>
+                                        <option value="15:00">03:00 PM</option>
+                                        <option value="15:30">03:30 PM</option>
+                                        <option value="16:00">04:00 PM</option>
+                                        <option value="16:30">04:30 PM</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label for="notes">Clinical Notes / Patient Symptoms</label>
+                                    <textarea id="notes" placeholder="e.g. Patient complains of tooth sensitivity or routine scaling checkup"></textarea>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 28px; display: flex; gap: 14px;">
+                                <button type="submit" id="btnSubmitApp" class="btn btn-primary" style="flex: 1;">
+                                    ✅ Confirm &amp; Register Appointment
+                                </button>
+                                <button type="reset" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Live Cost Summary & Doctor Info Sidebar -->
+                    <div>
+                        <div class="card" style="position: sticky; top: 90px;">
+                            <div class="card-header">
+                                <h2>Cost &amp; Doctor Preview</h2>
+                            </div>
+
+                            <div id="doctorPreviewCard" style="background: #f8fafc; padding: 16px; border-radius: var(--radius-md); margin-bottom: 20px; border: 1px solid var(--border-color);">
+                                <h4 id="previewDentistName" style="color: var(--primary-dark); font-size: 1.05rem;">No Dentist Selected</h4>
+                                <p id="previewSpecialization" style="font-size: 0.85rem; color: var(--text-muted);">Select a dentist to view details</p>
+                                <p id="previewRoom" style="font-size: 0.82rem; margin-top: 4px; color: var(--text-main);"></p>
+                            </div>
+
+                            <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem;">
+                                    <span>Consultation Fee:</span>
+                                    <span id="estConsultFee">LKR 0.00</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.9rem;">
+                                    <span>Standard Treatment Fee:</span>
+                                    <span id="estTreatmentFee">LKR 0.00</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-top: 2px solid var(--text-main); font-weight: 800; font-size: 1.1rem; color: var(--primary-dark);">
+                                    <span>Estimated Total:</span>
+                                    <span id="estTotalFee">LKR 0.00</span>
+                                </div>
+                            </div>
+
+                            <div style="background: #ecfdf5; border-left: 4px solid var(--secondary); padding: 12px; border-radius: var(--radius-sm); margin-top: 20px; font-size: 0.82rem; color: #065f46;">
+                                🔔 Automated SMS and Email confirmation alerts will be dispatched immediately upon booking.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal-backdrop">
+        <div class="modal-card" style="text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 12px;">🎉</div>
+            <h2 style="color: var(--success); font-size: 1.4rem; margin-bottom: 8px;">Appointment Registered Successfully!</h2>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 20px;">
+                The patient record has been saved and the slot is securely reserved.
+            </p>
+
+            <div style="background: #f8fafc; border: 2px dashed var(--primary); padding: 18px; border-radius: var(--radius-md); margin-bottom: 24px;">
+                <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Unique Appointment Number</span>
+                <h1 id="modalAppNo" style="color: var(--primary-dark); font-size: 2rem; margin-top: 4px;">APP-2026-000</h1>
+            </div>
+
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button class="btn btn-primary" onclick="viewModalAppointment()">🔍 View Details</button>
+                <button class="btn btn-secondary" onclick="closeSuccessModal()">Book Another</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        let dentistsList = [];
+        let treatmentsList = [];
+        let createdAppointmentNo = '';
+
+        async function initPage() {
+            // Set min date to today
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('appointmentDate').min = todayStr;
+            document.getElementById('appointmentDate').value = todayStr;
+
+            // Load Dentists
+            const dRes = await API.getDentists();
+            if (dRes.success) {
+                dentistsList = dRes.data;
+                const dSelect = document.getElementById('dentistSelect');
+                dentistsList.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.id;
+                    opt.textContent = `${d.name} (${d.specialization}) - LKR ${Number(d.consultationFee).toLocaleString()}`;
+                    dSelect.appendChild(opt);
+                });
+            }
+
+            // Load Treatments
+            const tRes = await API.getTreatments();
+            if (tRes.success) {
+                treatmentsList = tRes.data;
+                const tSelect = document.getElementById('treatmentSelect');
+                treatmentsList.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.textContent = `${t.name} [${t.category}] - LKR ${Number(t.standardFee).toLocaleString()}`;
+                    tSelect.appendChild(opt);
+                });
+            }
+        }
+
+        function updateEstimatedCost() {
+            const dentistId = parseInt(document.getElementById('dentistSelect').value);
+            const treatmentId = parseInt(document.getElementById('treatmentSelect').value);
+
+            let consult = 0;
+            let treatmentCost = 0;
+
+            const dentist = dentistsList.find(d => d.id === dentistId);
+            if (dentist) {
+                consult = Number(dentist.consultationFee);
+                document.getElementById('previewDentistName').textContent = dentist.name;
+                document.getElementById('previewSpecialization').textContent = dentist.specialization;
+                document.getElementById('previewRoom').textContent = `Room: ${dentist.roomNo} | Phone: ${dentist.contactNo}`;
+            } else {
+                document.getElementById('previewDentistName').textContent = 'No Dentist Selected';
+                document.getElementById('previewSpecialization').textContent = 'Select a dentist to view details';
+                document.getElementById('previewRoom').textContent = '';
+            }
+
+            const treatment = treatmentsList.find(t => t.id === treatmentId);
+            if (treatment) {
+                treatmentCost = Number(treatment.standardFee);
+            }
+
+            const total = consult + treatmentCost;
+            document.getElementById('estConsultFee').textContent = 'LKR ' + consult.toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('estTreatmentFee').textContent = 'LKR ' + treatmentCost.toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('estTotalFee').textContent = 'LKR ' + total.toLocaleString('en-US', {minimumFractionDigits: 2});
+        }
+
+        async function submitAppointment(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitApp');
+
+            const payload = {
+                patientName: document.getElementById('patientName').value.trim(),
+                contactNo: document.getElementById('contactNo').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                dob: document.getElementById('dob').value || null,
+                gender: document.getElementById('gender').value,
+                address: document.getElementById('address').value.trim(),
+                dentistId: parseInt(document.getElementById('dentistSelect').value),
+                treatmentId: parseInt(document.getElementById('treatmentSelect').value),
+                appointmentDate: document.getElementById('appointmentDate').value,
+                appointmentTime: document.getElementById('appointmentTime').value,
+                notes: document.getElementById('notes').value.trim()
+            };
+
+            btn.disabled = true;
+            btn.textContent = 'Processing Booking...';
+
+            const res = await API.createAppointment(payload);
+            btn.disabled = false;
+            btn.textContent = '✅ Confirm & Register Appointment';
+
+            if (res.success) {
+                createdAppointmentNo = res.data.appointmentNo;
+                document.getElementById('modalAppNo').textContent = createdAppointmentNo;
+                document.getElementById('successModal').classList.add('show');
+                showToast(`Appointment ${createdAppointmentNo} created successfully!`, 'success');
+            } else {
+                showToast(res.error || 'Failed to book appointment. Please check schedule conflict.', 'error');
+            }
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.remove('show');
+            document.getElementById('appointmentForm').reset();
+            updateEstimatedCost();
+        }
+
+        function viewModalAppointment() {
+            window.location.href = `search.html?no=${encodeURIComponent(createdAppointmentNo)}`;
+        }
+
+        function resetForm() {
+            setTimeout(updateEstimatedCost, 100);
+        }
+
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Dental Clinic - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">🦷</div>
+                <div class="brand-text">
+                    <h2>Sunrise Dental</h2>
+                    <span>Clinic Portal</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="menu-category">Operations</li>
+                <li><a href="dashboard.html" class="active"><span class="menu-icon">📊</span> Dashboard</a></li>
+                <li><a href="appointments.html"><span class="menu-icon">📅</span> Register Appointment</a></li>
+                <li><a href="search.html"><span class="menu-icon">🔍</span> Search Appointments</a></li>
+                <li><a href="billing.html"><span class="menu-icon">💳</span> Calculate &amp; Print Bill</a></li>
+
+                <li class="menu-category">Analytics &amp; Support</li>
+                <li><a href="reports.html"><span class="menu-icon">📈</span> Management Reports</a></li>
+                <li><a href="help.html"><span class="menu-icon">❓</span> Staff Help Guide</a></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar" id="userAvatar">SD</div>
+                    <div class="user-details">
+                        <h4 id="userFullName">Staff Member</h4>
+                        <span id="userRole">RECEPTIONIST</span>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()" title="Exit System">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-navbar">
+                <div class="page-title">
+                    <h1>Executive Clinic Dashboard</h1>
+                    <p>Real-time patient appointments, clinical operations, and daily performance</p>
+                </div>
+                <div class="top-actions">
+                    <span class="badge-clinic-status">Clinic Open &bull; Colombo 03</span>
+                    <a href="appointments.html" class="btn btn-primary btn-sm">+ New Appointment</a>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <!-- KPI Stat Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">👥</div>
+                        <div class="stat-info">
+                            <h3 id="statPatients">0</h3>
+                            <p>Registered Patients</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon green">📅</div>
+                        <div class="stat-info">
+                            <h3 id="statTodayApp">0</h3>
+                            <p>Today's Appointments</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon amber">⏳</div>
+                        <div class="stat-info">
+                            <h3 id="statPendingApp">0</h3>
+                            <p>Pending / Scheduled</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon purple">💰</div>
+                        <div class="stat-info">
+                            <h3 id="statRevenue">LKR 0.00</h3>
+                            <p>Today's Revenue</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Action Buttons -->
+                <div class="card" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <h2>Quick Actions</h2>
+                    </div>
+                    <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+                        <a href="appointments.html" class="btn btn-primary">📅 Book New Patient Appointment</a>
+                        <a href="search.html" class="btn btn-secondary">🔍 Search &amp; Inspect Appointment Details</a>
+                        <a href="billing.html" class="btn btn-success">💳 Calculate &amp; Generate Patient Bill</a>
+                        <a href="reports.html" class="btn btn-secondary">📊 View Doctor Workload Reports</a>
+                        <a href="help.html" class="btn btn-secondary">❓ Open Staff User Manual</a>
+                    </div>
+                </div>
+
+                <!-- Today's Schedule Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Today's Patient Schedule</h2>
+                        <a href="search.html" class="btn btn-secondary btn-sm">View All Records</a>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>App #</th>
+                                    <th>Patient Name</th>
+                                    <th>Contact</th>
+                                    <th>Dentist</th>
+                                    <th>Treatment</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="todayAppointmentsTable">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; color: var(--text-muted);">Loading today's schedule...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Real-time SMS & Email Notification Stream -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>📡 Real-Time Automated Notifications (Observer Pattern)</h2>
+                        <button class="btn btn-secondary btn-sm" onclick="loadNotifications()">Refresh Log</button>
+                    </div>
+                    <div id="notificationStream" style="max-height: 220px; overflow-y: auto; background: #0f172a; color: #38bdf8; font-family: monospace; font-size: 0.85rem; padding: 16px; border-radius: var(--radius-md); line-height: 1.6;">
+                        Loading dispatch log...
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        async function loadDashboard() {
+            const res = await API.getDashboardMetrics();
+            if (res.success && res.data) {
+                const d = res.data;
+                document.getElementById('statPatients').textContent = d.totalPatients;
+                document.getElementById('statTodayApp').textContent = d.todayAppointments;
+                document.getElementById('statPendingApp').textContent = d.pendingAppointments;
+                document.getElementById('statRevenue').textContent = 'LKR ' + (d.todayRevenue ? Number(d.todayRevenue).toLocaleString('en-US', {minimumFractionDigits: 2}) : '0.00');
+
+                // Render Table
+                const tbody = document.getElementById('todayAppointmentsTable');
+                if (!d.recentAppointments || d.recentAppointments.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">No appointments recorded.</td></tr>';
+                } else {
+                    tbody.innerHTML = d.recentAppointments.map(a => `
+                        <tr>
+                            <td><strong>${a.appointmentNo}</strong></td>
+                            <td>${a.patientName}</td>
+                            <td>${a.contactNo}</td>
+                            <td>${a.dentistName}</td>
+                            <td>${a.treatmentName}</td>
+                            <td>${a.appointmentTime ? a.appointmentTime.substring(0, 5) : ''}</td>
+                            <td><span class="status-chip ${a.status ? a.status.toLowerCase() : 'scheduled'}">${a.status}</span></td>
+                            <td>
+                                <a href="search.html?no=${a.appointmentNo}" class="btn btn-secondary btn-sm">Inspect</a>
+                                ${a.status !== 'COMPLETED' && a.status !== 'CANCELLED' ? `<a href="billing.html?appId=${a.id}" class="btn btn-primary btn-sm">Bill</a>` : ''}
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            }
+            loadNotifications();
+        }
+
+        async function loadNotifications() {
+            const res = await API.getNotificationLogs();
+            const box = document.getElementById('notificationStream');
+            if (res.success && res.data && res.data.length > 0) {
+                box.innerHTML = res.data.map(msg => `<div>&gt; ${escapeHtml(msg)}</div>`).join('');
+                box.scrollTop = box.scrollHeight;
+            } else {
+                box.innerHTML = '&gt; No active notifications queued.';
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+</html>

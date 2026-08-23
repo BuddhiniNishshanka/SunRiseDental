@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Dental Clinic - Staff Help Guide</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">🦷</div>
+                <div class="brand-text">
+                    <h2>Sunrise Dental</h2>
+                    <span>Clinic Portal</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="menu-category">Operations</li>
+                <li><a href="dashboard.html"><span class="menu-icon">📊</span> Dashboard</a></li>
+                <li><a href="appointments.html"><span class="menu-icon">📅</span> Register Appointment</a></li>
+                <li><a href="search.html"><span class="menu-icon">🔍</span> Search Appointments</a></li>
+                <li><a href="billing.html"><span class="menu-icon">💳</span> Calculate &amp; Print Bill</a></li>
+
+                <li class="menu-category">Analytics &amp; Support</li>
+                <li><a href="reports.html"><span class="menu-icon">📈</span> Management Reports</a></li>
+                <li><a href="help.html" class="active"><span class="menu-icon">❓</span> Staff Help Guide</a></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar" id="userAvatar">SD</div>
+                    <div class="user-details">
+                        <h4 id="userFullName">Staff Member</h4>
+                        <span id="userRole">RECEPTIONIST</span>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()" title="Exit System">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-navbar">
+                <div class="page-title">
+                    <h1>Staff Operational Help &amp; Standard Procedures</h1>
+                    <p>Step-by-step user manual and technical guidance for clinic staff</p>
+                </div>
+                <div class="top-actions">
+                    <a href="dashboard.html" class="btn btn-secondary btn-sm">Return to Dashboard</a>
+                </div>
+            </header>
+
+            <div class="content-body" style="max-width: 960px;">
+                <!-- Section 1: Authentication -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>1. Staff Authentication &amp; System Access</h2>
+                    </div>
+                    <p>To access the Sunrise Dental Management System, each authorized staff member must log in with their allocated credentials.</p>
+                    <ol style="margin-left: 24px; margin-top: 12px; line-height: 1.8;">
+                        <li>Navigate to the login screen (<code>index.html</code>).</li>
+                        <li>Enter your designated <strong>Staff Username</strong> and <strong>Password</strong>.</li>
+                        <li>Upon successful authentication, a secure session cookie (<code>JSESSIONID</code>) is initiated with role-based permissions (Admin, Receptionist, Dentist).</li>
+                    </ol>
+                </div>
+
+                <!-- Section 2: Registering New Appointments -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>2. How to Register a New Patient Appointment</h2>
+                    </div>
+                    <p>Follow these steps to schedule a patient consultation or dental procedure:</p>
+                    <ol style="margin-left: 24px; margin-top: 12px; line-height: 1.8;">
+                        <li>Click <strong>Register Appointment</strong> from the sidebar navigation.</li>
+                        <li>Enter the patient's full name, address, and valid contact number (10-digit format).</li>
+                        <li>Select the appropriate <strong>Dentist</strong> from the dropdown menu (consultation fee and specialization will update automatically).</li>
+                        <li>Select the desired <strong>Treatment Type</strong> (e.g. Scaling, Filling, Root Canal).</li>
+                        <li>Pick the <strong>Appointment Date</strong> and available <strong>Time Slot</strong>.
+                            <div style="background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: var(--radius-sm); margin-top: 6px;">
+                                💡 <em>Note: The system contains built-in conflict detection (MySQL database trigger &amp; service validator) that automatically prevents double-booking identical doctor slots.</em>
+                            </div>
+                        </li>
+                        <li>Click <strong>Confirm &amp; Register Appointment</strong>. The system will generate a unique Appointment Number (e.g. <code>APP-2026-005</code>) and dispatch simulated SMS and Email alerts.</li>
+                    </ol>
+                </div>
+
+                <!-- Section 3: Searching & Displaying Appointment Details -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>3. Searching and Inspecting Appointment Details</h2>
+                    </div>
+                    <p>When a patient arrives at the clinic or calls the front desk:</p>
+                    <ol style="margin-left: 24px; margin-top: 12px; line-height: 1.8;">
+                        <li>Open the <strong>Search Appointments</strong> module.</li>
+                        <li>Type the unique <strong>Appointment Number</strong> (e.g. <code>APP-2026-001</code>) or the patient's name/contact number into the search bar.</li>
+                        <li>The system displays full details including patient contact information, assigned dentist, scheduled time slot, and current status.</li>
+                        <li>Staff can view complete appointment records, initiate cancellations if necessary, or proceed directly to billing.</li>
+                    </ol>
+                </div>
+
+                <!-- Section 4: Calculating and Printing Bills -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>4. Billing Calculation, Discounts &amp; Receipt Printing</h2>
+                    </div>
+                    <p>When the dental treatment is completed:</p>
+                    <ol style="margin-left: 24px; margin-top: 12px; line-height: 1.8;">
+                        <li>Navigate to the <strong>Calculate &amp; Print Bill</strong> screen.</li>
+                        <li>Select the patient's appointment. The system automatically computes the <code>Consultation Fee + Treatment Standard Fee</code>.</li>
+                        <li>Apply promotional discount percentages or tax rates if applicable. The system applies dynamic <em>Strategy Pattern</em> rules (e.g., automated 10% Senior Citizen subsidies).</li>
+                        <li>Select the payment method (Cash, Card, Transfer, Insurance) and click <strong>Settle Payment &amp; Generate Official Invoice</strong>.</li>
+                        <li>Click <strong>View &amp; Print Official Patient Receipt</strong> to open the printable receipt formatted with clinic credentials and itemized fee breakdown.</li>
+                    </ol>
+                </div>
+
+                <!-- Section 5: Exit System -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>5. Safe System Exit (Logout)</h2>
+                    </div>
+                    <p>To safely terminate your active session:</p>
+                    <ul style="margin-left: 24px; margin-top: 12px; line-height: 1.8;">
+                        <li>Click the red <strong>Logout</strong> button at the bottom of the sidebar.</li>
+                        <li>Your session cookie is invalidated on the server, ensuring privacy and compliance with data protection policies.</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+</body>
+</html>

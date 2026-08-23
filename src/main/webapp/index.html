@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Dental Clinic - Staff Login</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-body">
+
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-logo">🦷</div>
+            <h2>Sunrise Dental Clinic</h2>
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 4px;">Computerized Patient &amp; Appointment Management System</p>
+        </div>
+
+        <form id="loginForm" onsubmit="doLogin(event)">
+            <div class="form-group" style="margin-bottom: 18px;">
+                <label for="username">Staff Username</label>
+                <input type="text" id="username" placeholder="e.g. admin or reception" required autofocus>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter secure password" required>
+            </div>
+
+            <button type="submit" id="btnLogin" class="btn btn-primary" style="width: 100%; padding: 13px;">
+                Secure Sign In ➔
+            </button>
+        </form>
+
+        <div class="quick-credentials">
+            <p><strong>Demo Staff Credentials:</strong></p>
+            <p>👤 <strong>Admin:</strong> <code>admin</code> / <code>admin123</code></p>
+            <p>👩‍💼 <strong>Reception:</strong> <code>reception</code> / <code>staff123</code></p>
+            <p>🩺 <strong>Dentist:</strong> <code>dentist_silva</code> / <code>staff123</code></p>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px; font-size: 0.78rem; color: var(--text-light);">
+            Cardiff Metropolitan University - CIS6003 Advanced Programming
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        async function doLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnLogin');
+            const userVal = document.getElementById('username').value.trim();
+            const passVal = document.getElementById('password').value.trim();
+
+            btn.disabled = true;
+            btn.textContent = 'Authenticating...';
+
+            const res = await API.login(userVal, passVal);
+            if (res.success) {
+                sessionStorage.setItem('currentUser', JSON.stringify(res.data));
+                showToast(`Welcome back, ${res.data.fullName}!`, 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 800);
+            } else {
+                btn.disabled = false;
+                btn.textContent = 'Secure Sign In ➔';
+                showToast(res.error || 'Authentication failed. Please check credentials.', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
