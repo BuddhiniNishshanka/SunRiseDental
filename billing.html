@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Dental Clinic - Calculate &amp; Print Bill</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-container no-print">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">🦷</div>
+                <div class="brand-text">
+                    <h2>Sunrise Dental</h2>
+                    <span>Clinic Portal</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="menu-category">Operations</li>
+                <li><a href="dashboard.html"><span class="menu-icon">📊</span> Dashboard</a></li>
+                <li><a href="appointments.html"><span class="menu-icon">📅</span> Register Appointment</a></li>
+                <li><a href="search.html"><span class="menu-icon">🔍</span> Search Appointments</a></li>
+                <li><a href="billing.html" class="active"><span class="menu-icon">💳</span> Calculate &amp; Print Bill</a></li>
+
+                <li class="menu-category">Analytics &amp; Support</li>
+                <li><a href="reports.html"><span class="menu-icon">📈</span> Management Reports</a></li>
+                <li><a href="help.html"><span class="menu-icon">❓</span> Staff Help Guide</a></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar" id="userAvatar">SD</div>
+                    <div class="user-details">
+                        <h4 id="userFullName">Staff Member</h4>
+                        <span id="userRole">RECEPTIONIST</span>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()" title="Exit System">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-navbar">
+                <div class="page-title">
+                    <h1>Billing Engine &amp; Invoice Generation</h1>
+                    <p>Calculate total treatment costs, apply discount strategies, and print official patient receipts</p>
+                </div>
+                <div class="top-actions">
+                    <a href="search.html" class="btn btn-secondary btn-sm">Find Appointment</a>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 28px;">
+                    <!-- Billing Form & Selection -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>1. Select Appointment for Settlement</h2>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="appSelect">Choose Scheduled Appointment <span class="required">*</span></label>
+                            <select id="appSelect" onchange="onAppointmentSelected()">
+                                <option value="">-- Select Appointment --</option>
+                            </select>
+                        </div>
+
+                        <div id="appointmentSummaryBox" style="display: none; background: #f8fafc; padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 24px;">
+                            <h3 style="font-size: 1rem; color: var(--primary-dark); margin-bottom: 10px;">📋 Appointment Summary</h3>
+                            <p><strong>Appointment #:</strong> <span id="sumAppNo">-</span></p>
+                            <p><strong>Patient:</strong> <span id="sumPatient">-</span> (<span id="sumContact">-</span>)</p>
+                            <p><strong>Dentist:</strong> <span id="sumDentist">-</span></p>
+                            <p><strong>Treatment:</strong> <span id="sumTreatment">-</span></p>
+                        </div>
+
+                        <div class="card-header" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                            <h2>2. Adjust Discounts &amp; Payment Options</h2>
+                        </div>
+
+                        <form id="billingForm" onsubmit="processBillPayment(event)">
+                            <div class="form-grid" style="margin-bottom: 20px;">
+                                <div class="form-group">
+                                    <label for="discountRate">Discount Rate (%)</label>
+                                    <input type="number" id="discountRate" min="0" max="100" step="1" value="0" oninput="recalcPreview()">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="taxRate">Tax / VAT Rate (%)</label>
+                                    <input type="number" id="taxRate" min="0" max="50" step="1" value="0" oninput="recalcPreview()">
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label for="paymentMethod">Payment Method <span class="required">*</span></label>
+                                    <select id="paymentMethod" required>
+                                        <option value="CASH">Cash Settlement</option>
+                                        <option value="CREDIT_CARD">Credit / Debit Card</option>
+                                        <option value="ONLINE_TRANSFER">Online Bank Transfer</option>
+                                        <option value="INSURANCE">Dental Medical Insurance</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" id="btnProcessBill" class="btn btn-success" style="width: 100%; padding: 13px; font-size: 1rem;" disabled>
+                                💳 Settle Payment &amp; Generate Official Invoice
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Live Calculation Breakdown & Receipt Preview -->
+                    <div>
+                        <div class="card" style="border-top: 4px solid var(--secondary);">
+                            <div class="card-header">
+                                <h2>3. Itemized Calculation Breakdown</h2>
+                                <span id="strategyBadge" class="status-chip paid">Strategy Active</span>
+                            </div>
+
+                            <div style="font-size: 0.95rem; line-height: 2;">
+                                <div class="receipt-row">
+                                    <span>Dentist Consultation Fee:</span>
+                                    <span id="breakConsultFee">LKR 0.00</span>
+                                </div>
+                                <div class="receipt-row">
+                                    <span>Treatment Procedure Cost:</span>
+                                    <span id="breakTreatmentCost">LKR 0.00</span>
+                                </div>
+                                <div class="receipt-row" style="border-top: 1px dashed var(--border-color); padding-top: 8px;">
+                                    <span>Gross Subtotal:</span>
+                                    <span id="breakSubtotal" style="font-weight: 600;">LKR 0.00</span>
+                                </div>
+                                <div class="receipt-row" style="color: var(--secondary-dark);">
+                                    <span>Discount Amount (<span id="breakDiscPercent">0%</span>):</span>
+                                    <span id="breakDiscount">- LKR 0.00</span>
+                                </div>
+                                <div class="receipt-row" style="color: var(--text-muted);">
+                                    <span>Government Tax / VAT (<span id="breakTaxPercent">0%</span>):</span>
+                                    <span id="breakTax">+ LKR 0.00</span>
+                                </div>
+                                <div class="receipt-row total">
+                                    <span>Total Payable Amount:</span>
+                                    <span id="breakFinalTotal" style="color: var(--primary-dark);">LKR 0.00</span>
+                                </div>
+                            </div>
+
+                            <div id="receiptActionsBox" style="display: none; margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+                                <button class="btn btn-primary" style="width: 100%;" onclick="openPrintReceiptModal()">
+                                    🖨️ View &amp; Print Official Patient Receipt
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Official Patient Receipt Print Modal -->
+    <div id="receiptModal" class="modal-backdrop">
+        <div class="modal-card" style="max-width: 680px; padding: 0;">
+            <div style="padding: 16px 24px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color);" class="no-print">
+                <h3 style="font-size: 1.1rem;">Official Patient Receipt Preview</h3>
+                <div>
+                    <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print Receipt</button>
+                    <button class="btn btn-secondary btn-sm" onclick="closeReceiptModal()">Close</button>
+                </div>
+            </div>
+
+            <div class="receipt-container" style="box-shadow: none; border: none;">
+                <div class="receipt-header">
+                    <h2>SUNRISE DENTAL CLINIC</h2>
+                    <p style="font-size: 0.85rem; color: #475569;">No. 120, Galle Road, Colombo 03, Sri Lanka</p>
+                    <p style="font-size: 0.82rem; color: #475569;">Tel: +94 11 234 5678 | Email: billing@sunrisedental.lk</p>
+                    <div style="margin-top: 12px; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.05em; color: #0f172a;">
+                        OFFICIAL PAYMENT RECEIPT
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 16px;">
+                    <div>
+                        <p><strong>Receipt No:</strong> <span id="recBillNo">INV-2026-0001</span></p>
+                        <p><strong>Appointment No:</strong> <span id="recAppNo">APP-2026-001</span></p>
+                        <p><strong>Date &amp; Time:</strong> <span id="recDate">2026-08-23</span></p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p><strong>Patient Name:</strong> <span id="recPatientName">Kamal Gunaratne</span></p>
+                        <p><strong>Patient Code:</strong> <span id="recPatientCode">PT-1001</span></p>
+                        <p><strong>Dentist:</strong> <span id="recDentistName">Dr. Nuwan Silva</span></p>
+                    </div>
+                </div>
+
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-bottom: 16px;">
+                    <thead>
+                        <tr style="background: #f1f5f9; border-bottom: 2px solid #cbd5e1;">
+                            <th style="padding: 8px; text-align: left;">Item / Description</th>
+                            <th style="padding: 8px; text-align: right;">Amount (LKR)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">Doctor Consultation Fee</td>
+                            <td style="padding: 8px; text-align: right; border-bottom: 1px solid #e2e8f0;" id="recConsult">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;" id="recTreatment">Dental Procedure</td>
+                            <td style="padding: 8px; text-align: right; border-bottom: 1px solid #e2e8f0;" id="recTreatFee">0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="font-size: 0.92rem;">
+                    <div class="receipt-row">
+                        <span>Subtotal:</span>
+                        <span id="recSubtotal">0.00</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Discount (<span id="recDiscRate">0%</span>):</span>
+                        <span id="recDiscount">0.00</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Tax / VAT (<span id="recTaxRate">0%</span>):</span>
+                        <span id="recTax">0.00</span>
+                    </div>
+                    <div class="receipt-row total">
+                        <span>TOTAL PAID (LKR):</span>
+                        <span id="recTotal">0.00</span>
+                    </div>
+                    <div class="receipt-row" style="font-size: 0.85rem; color: #475569;">
+                        <span>Payment Method:</span>
+                        <span id="recMethod" style="font-weight: 700;">CASH</span>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 24px; padding-top: 16px; border-top: 1px dashed #cbd5e1; font-size: 0.8rem; color: #64748b;">
+                    Thank you for choosing Sunrise Dental Clinic. Wish you good oral health!<br>
+                    <em>This is a computer generated receipt. Valid without signature.</em>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        let allAppointments = [];
+        let selectedAppointment = null;
+        let activeGeneratedBill = null;
+
+        async function initBilling() {
+            const res = await API.getAllAppointments();
+            if (res.success) {
+                allAppointments = res.data;
+                const select = document.getElementById('appSelect');
+                allAppointments.forEach(a => {
+                    const opt = document.createElement('option');
+                    opt.value = a.id;
+                    opt.textContent = `${a.appointmentNo} - ${a.patientName} (${a.dentistName}) [${a.status}]`;
+                    select.appendChild(opt);
+                });
+
+                // Check URL param ?appId=...
+                const urlParams = new URLSearchParams(window.location.search);
+                const appId = urlParams.get('appId');
+                if (appId) {
+                    select.value = appId;
+                    onAppointmentSelected();
+                }
+            }
+        }
+
+        async function onAppointmentSelected() {
+            const appId = parseInt(document.getElementById('appSelect').value);
+            if (!appId) {
+                selectedAppointment = null;
+                document.getElementById('appointmentSummaryBox').style.display = 'none';
+                document.getElementById('btnProcessBill').disabled = true;
+                return;
+            }
+
+            selectedAppointment = allAppointments.find(a => a.id === appId);
+            if (selectedAppointment) {
+                document.getElementById('sumAppNo').textContent = selectedAppointment.appointmentNo;
+                document.getElementById('sumPatient').textContent = selectedAppointment.patientName;
+                document.getElementById('sumContact').textContent = selectedAppointment.contactNo;
+                document.getElementById('sumDentist').textContent = selectedAppointment.dentistName;
+                document.getElementById('sumTreatment').textContent = selectedAppointment.treatmentName;
+                document.getElementById('appointmentSummaryBox').style.display = 'block';
+
+                document.getElementById('btnProcessBill').disabled = false;
+                await recalcPreview();
+
+                // If already billed, check existing bill
+                if (selectedAppointment.billId || selectedAppointment.status === 'COMPLETED') {
+                    const bRes = await API.getBillByAppointmentId(appId);
+                    if (bRes.success && bRes.data) {
+                        activeGeneratedBill = bRes.data;
+                        document.getElementById('receiptActionsBox').style.display = 'block';
+                    }
+                } else {
+                    document.getElementById('receiptActionsBox').style.display = 'none';
+                }
+            }
+        }
+
+        async function recalcPreview() {
+            if (!selectedAppointment) return;
+            const discount = parseFloat(document.getElementById('discountRate').value) || 0;
+            const tax = parseFloat(document.getElementById('taxRate').value) || 0;
+
+            const res = await API.previewBill(selectedAppointment.id, discount, tax);
+            if (res.success && res.data) {
+                const c = res.data;
+                document.getElementById('strategyBadge').textContent = c.strategyApplied || 'Standard Billing';
+                document.getElementById('breakConsultFee').textContent = 'LKR ' + Number(c.consultationFee).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('breakTreatmentCost').textContent = 'LKR ' + Number(c.treatmentCost).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('breakSubtotal').textContent = 'LKR ' + Number(c.subtotal).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('breakDiscPercent').textContent = c.discountRate + '%';
+                document.getElementById('breakDiscount').textContent = '- LKR ' + Number(c.discountAmount).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('breakTaxPercent').textContent = c.taxRate + '%';
+                document.getElementById('breakTax').textContent = '+ LKR ' + Number(c.taxAmount).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('breakFinalTotal').textContent = 'LKR ' + Number(c.totalAmount).toLocaleString('en-US', {minimumFractionDigits: 2});
+            }
+        }
+
+        async function processBillPayment(e) {
+            e.preventDefault();
+            if (!selectedAppointment) return;
+
+            const btn = document.getElementById('btnProcessBill');
+            btn.disabled = true;
+            btn.textContent = 'Processing Transaction...';
+
+            const payload = {
+                appointmentId: selectedAppointment.id,
+                discountRate: parseFloat(document.getElementById('discountRate').value) || 0,
+                taxRate: parseFloat(document.getElementById('taxRate').value) || 0,
+                paymentMethod: document.getElementById('paymentMethod').value
+            };
+
+            const res = await API.processBill(payload);
+            btn.disabled = false;
+            btn.textContent = '💳 Settle Payment & Generate Official Invoice';
+
+            if (res.success) {
+                activeGeneratedBill = res.data;
+                showToast(`Invoice ${activeGeneratedBill.billNo} successfully created and settled!`, 'success');
+                document.getElementById('receiptActionsBox').style.display = 'block';
+                openPrintReceiptModal();
+            } else {
+                showToast(res.error || 'Failed to process bill', 'error');
+            }
+        }
+
+        function openPrintReceiptModal() {
+            if (!activeGeneratedBill && !selectedAppointment) return;
+
+            const bill = activeGeneratedBill;
+            const app = selectedAppointment;
+
+            document.getElementById('recBillNo').textContent = bill ? bill.billNo : 'INV-PREVIEW';
+            document.getElementById('recAppNo').textContent = bill ? bill.appointmentNo : app.appointmentNo;
+            document.getElementById('recDate').textContent = bill ? (bill.billDate ? bill.billDate.substring(0, 10) : new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0];
+            document.getElementById('recPatientName').textContent = bill ? bill.patientName : app.patientName;
+            document.getElementById('recPatientCode').textContent = bill ? bill.patientCode : app.patientCode;
+            document.getElementById('recDentistName').textContent = bill ? bill.dentistName : app.dentistName;
+
+            document.getElementById('recConsult').textContent = Number(bill ? bill.consultationFee : app.dentistConsultationFee).toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('recTreatment').textContent = bill ? bill.treatmentName : app.treatmentName;
+            document.getElementById('recTreatFee').textContent = Number(bill ? bill.treatmentCost : app.treatmentStandardFee).toLocaleString('en-US', {minimumFractionDigits: 2});
+
+            const sub = Number(bill ? (Number(bill.consultationFee) + Number(bill.treatmentCost)) : 0);
+            document.getElementById('recSubtotal').textContent = 'LKR ' + sub.toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('recDiscRate').textContent = (bill ? bill.discountRate : 0) + '%';
+            document.getElementById('recDiscount').textContent = 'LKR ' + Number(bill ? bill.discountAmount : 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('recTaxRate').textContent = (bill ? bill.taxRate : 0) + '%';
+            document.getElementById('recTax').textContent = 'LKR ' + Number(bill ? bill.taxAmount : 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('recTotal').textContent = 'LKR ' + Number(bill ? bill.totalAmount : 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('recMethod').textContent = bill ? bill.paymentMethod : 'CASH';
+
+            document.getElementById('receiptModal').classList.add('show');
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receiptModal').classList.remove('show');
+        }
+
+        document.addEventListener('DOMContentLoaded', initBilling);
+    </script>
+</body>
+</html>

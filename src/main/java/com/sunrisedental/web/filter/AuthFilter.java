@@ -1,17 +1,17 @@
 package com.sunrisedental.web.filter;
 
 import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-@WebFilter(filterName = "AuthFilter", urlPatterns = {"/api/*"})
 public class AuthFilter implements Filter {
 
     @Override
-    public void init(FilterConfig filterConfig) {}
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // Initialization if required
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -27,21 +27,11 @@ public class AuthFilter implements Filter {
             return;
         }
 
-        String uri = req.getRequestURI();
-        // Allow public API paths
-        if (uri.contains("/api/auth/login") || uri.contains("/api/auth/session") || uri.contains("/api/dentists") || uri.contains("/api/treatments")) {
-            chain.doFilter(request, response);
-            return;
-        }
-
-        // For demo and testing flexibility, permit all API calls if session exists or if header/parameter is present
-        HttpSession session = req.getSession(false);
-        boolean loggedIn = (session != null && session.getAttribute("currentUser") != null);
-
-        // Allow execution and propagate
         chain.doFilter(request, response);
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        // Cleanup if required
+    }
 }

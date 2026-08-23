@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Dental Clinic - Search Appointments</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">🦷</div>
+                <div class="brand-text">
+                    <h2>Sunrise Dental</h2>
+                    <span>Clinic Portal</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="menu-category">Operations</li>
+                <li><a href="dashboard.html"><span class="menu-icon">📊</span> Dashboard</a></li>
+                <li><a href="appointments.html"><span class="menu-icon">📅</span> Register Appointment</a></li>
+                <li><a href="search.html" class="active"><span class="menu-icon">🔍</span> Search Appointments</a></li>
+                <li><a href="billing.html"><span class="menu-icon">💳</span> Calculate &amp; Print Bill</a></li>
+
+                <li class="menu-category">Analytics &amp; Support</li>
+                <li><a href="reports.html"><span class="menu-icon">📈</span> Management Reports</a></li>
+                <li><a href="help.html"><span class="menu-icon">❓</span> Staff Help Guide</a></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar" id="userAvatar">SD</div>
+                    <div class="user-details">
+                        <h4 id="userFullName">Staff Member</h4>
+                        <span id="userRole">RECEPTIONIST</span>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()" title="Exit System">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-navbar">
+                <div class="page-title">
+                    <h1>Search &amp; Display Appointment Details</h1>
+                    <p>Lookup patient visits by unique appointment number or patient keywords</p>
+                </div>
+                <div class="top-actions">
+                    <a href="appointments.html" class="btn btn-primary btn-sm">+ New Appointment</a>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <!-- Search Control -->
+                <div class="card" style="margin-bottom: 24px;">
+                    <form onsubmit="handleSearch(event)" class="search-box" style="margin-bottom: 0;">
+                        <div class="search-input-group">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="searchInput" placeholder="Enter Appointment Number (e.g. APP-2026-001) or Patient Name / Phone..." autofocus>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Search</button>
+                        <button type="button" class="btn btn-secondary" onclick="loadAllAppointments()">View All</button>
+                    </form>
+                </div>
+
+                <!-- Single Detailed Appointment Inspector Card (Shown when searching single appointment) -->
+                <div id="singleDetailView" class="card" style="display: none; border-left: 6px solid var(--primary);">
+                    <div class="card-header">
+                        <div>
+                            <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Appointment Record</span>
+                            <h2 id="detAppNo" style="color: var(--primary-dark); font-size: 1.6rem;">APP-2026-001</h2>
+                        </div>
+                        <div>
+                            <span id="detStatusChip" class="status-chip scheduled">SCHEDULED</span>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 24px;">
+                        <!-- Patient Card -->
+                        <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                            <h3 style="font-size: 1rem; color: var(--primary-dark); margin-bottom: 12px;">👤 Patient Information</h3>
+                            <p style="margin-bottom: 6px;"><strong>Name:</strong> <span id="detPatientName">-</span></p>
+                            <p style="margin-bottom: 6px;"><strong>Patient Code:</strong> <span id="detPatientCode">-</span></p>
+                            <p style="margin-bottom: 6px;"><strong>Contact No:</strong> <span id="detContactNo">-</span></p>
+                            <p style="margin-bottom: 6px;"><strong>Address:</strong> <span id="detAddress">-</span></p>
+                        </div>
+
+                        <!-- Dentist Card -->
+                        <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                            <h3 style="font-size: 1rem; color: var(--primary-dark); margin-bottom: 12px;">🩺 Attending Dentist</h3>
+                            <p style="margin-bottom: 6px;"><strong>Dentist Name:</strong> <span id="detDentistName">-</span></p>
+                            <p style="margin-bottom: 6px;"><strong>Specialization:</strong> <span id="detSpecialization">-</span></p>
+                            <p style="margin-bottom: 6px;"><strong>Consultation Room:</strong> <span id="detRoomNo">-</span></p>
+                            <p style="margin-bottom: 6px;"><strong>Consultation Fee:</strong> <span id="detConsultFee">-</span></p>
+                        </div>
+
+                        <!-- Treatment & Timing Card -->
+                        <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                            <h3 style="font-size: 1rem; color: var(--primary-dark); margin-bottom: 12px;">📋 Treatment &amp; Schedule</h3>
+                            <p style="margin-bottom: 6px;"><strong>Procedure:</strong> <span id="detTreatmentName">-</span></p>
+                            <p style="margin-bottom: 6px;"><strong>Standard Fee:</strong> <span id="detTreatmentFee">-</span></p>
+                            <p style="margin-bottom: 6px;"><strong>Date:</strong> <span id="detAppDate">-</span></p>
+                            <p style="margin-bottom: 6px;"><strong>Time:</strong> <span id="detAppTime">-</span></p>
+                            <p style="margin-bottom: 6px;"><strong>Notes:</strong> <span id="detNotes" style="color: var(--text-muted);">-</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Action Toolbar -->
+                    <div style="display: flex; gap: 14px; border-top: 1px solid var(--border-color); padding-top: 18px; justify-content: flex-end;">
+                        <button id="btnCancelApp" class="btn btn-danger" onclick="cancelCurrentAppointment()">❌ Cancel Appointment</button>
+                        <a id="btnBillApp" href="#" class="btn btn-primary">💳 Proceed to Calculate &amp; Print Bill ➔</a>
+                    </div>
+                </div>
+
+                <!-- Multiple Search Results Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Appointment Search Results</h2>
+                        <span id="resultsCount" style="font-size: 0.85rem; color: var(--text-muted);">Showing all records</span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>App #</th>
+                                    <th>Patient</th>
+                                    <th>Contact</th>
+                                    <th>Dentist</th>
+                                    <th>Treatment</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="searchResultsTable">
+                                <tr>
+                                    <td colspan="9" style="text-align: center; color: var(--text-muted);">Loading appointment records...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        let currentLoadedAppointment = null;
+
+        async function initSearchPage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const appNo = urlParams.get('no');
+            if (appNo) {
+                document.getElementById('searchInput').value = appNo;
+                await searchByNumber(appNo);
+            } else {
+                await loadAllAppointments();
+            }
+        }
+
+        async function handleSearch(e) {
+            if (e) e.preventDefault();
+            const q = document.getElementById('searchInput').value.trim();
+            if (!q) {
+                loadAllAppointments();
+                return;
+            }
+
+            if (q.toUpperCase().startsWith('APP-')) {
+                await searchByNumber(q);
+            } else {
+                // Keyword search
+                const res = await API.searchAppointments(q);
+                if (res.success) {
+                    renderTable(res.data);
+                    document.getElementById('resultsCount').textContent = `Found ${res.data.length} match(es)`;
+                    document.getElementById('singleDetailView').style.display = 'none';
+                } else {
+                    showToast(res.error || 'Search failed', 'error');
+                }
+            }
+        }
+
+        async function searchByNumber(appNo) {
+            const res = await API.searchAppointmentByNo(appNo);
+            if (res.success && res.data) {
+                renderSingleDetail(res.data);
+                renderTable([res.data]);
+                document.getElementById('resultsCount').textContent = `Found exact match: ${appNo}`;
+            } else {
+                showToast(`No appointment found for ${appNo}`, 'error');
+                document.getElementById('singleDetailView').style.display = 'none';
+            }
+        }
+
+        async function loadAllAppointments() {
+            const res = await API.getAllAppointments();
+            if (res.success && res.data) {
+                renderTable(res.data);
+                document.getElementById('resultsCount').textContent = `Showing all ${res.data.length} records`;
+                document.getElementById('singleDetailView').style.display = 'none';
+            }
+        }
+
+        function renderSingleDetail(a) {
+            currentLoadedAppointment = a;
+            const det = document.getElementById('singleDetailView');
+            det.style.display = 'block';
+
+            document.getElementById('detAppNo').textContent = a.appointmentNo;
+            const chip = document.getElementById('detStatusChip');
+            chip.className = `status-chip ${a.status ? a.status.toLowerCase() : 'scheduled'}`;
+            chip.textContent = a.status;
+
+            document.getElementById('detPatientName').textContent = a.patientName;
+            document.getElementById('detPatientCode').textContent = a.patientCode;
+            document.getElementById('detContactNo').textContent = a.contactNo;
+            document.getElementById('detAddress').textContent = a.address;
+
+            document.getElementById('detDentistName').textContent = a.dentistName;
+            document.getElementById('detSpecialization').textContent = a.dentistSpecialization;
+            document.getElementById('detRoomNo').textContent = a.dentistRoomNo;
+            document.getElementById('detConsultFee').textContent = 'LKR ' + (a.dentistConsultationFee ? Number(a.dentistConsultationFee).toLocaleString() : '0.00');
+
+            document.getElementById('detTreatmentName').textContent = a.treatmentName;
+            document.getElementById('detTreatmentFee').textContent = 'LKR ' + (a.treatmentStandardFee ? Number(a.treatmentStandardFee).toLocaleString() : '0.00');
+            document.getElementById('detAppDate').textContent = a.appointmentDate;
+            document.getElementById('detAppTime').textContent = a.appointmentTime ? a.appointmentTime.substring(0, 5) : '';
+            document.getElementById('detNotes').textContent = a.notes || 'None';
+
+            const btnBill = document.getElementById('btnBillApp');
+            btnBill.href = `billing.html?appId=${a.id}`;
+
+            const btnCancel = document.getElementById('btnCancelApp');
+            btnCancel.style.display = (a.status === 'COMPLETED' || a.status === 'CANCELLED') ? 'none' : 'inline-flex';
+
+            det.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function renderTable(list) {
+            const tbody = document.getElementById('searchResultsTable');
+            if (!list || list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--text-muted);">No appointments found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = list.map(a => `
+                <tr>
+                    <td><strong>${a.appointmentNo}</strong></td>
+                    <td>${a.patientName}</td>
+                    <td>${a.contactNo}</td>
+                    <td>${a.dentistName}</td>
+                    <td>${a.treatmentName}</td>
+                    <td>${a.appointmentDate}</td>
+                    <td>${a.appointmentTime ? a.appointmentTime.substring(0, 5) : ''}</td>
+                    <td><span class="status-chip ${a.status ? a.status.toLowerCase() : 'scheduled'}">${a.status}</span></td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick='renderSingleDetail(${JSON.stringify(a)})'>Inspect</button>
+                        ${a.status !== 'COMPLETED' && a.status !== 'CANCELLED' ? `<a href="billing.html?appId=${a.id}" class="btn btn-primary btn-sm">Bill</a>` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function cancelCurrentAppointment() {
+            if (!currentLoadedAppointment) return;
+            if (!confirm(`Are you sure you want to cancel appointment ${currentLoadedAppointment.appointmentNo}?`)) return;
+
+            const res = await API.cancelAppointment(currentLoadedAppointment.id);
+            if (res.success) {
+                showToast('Appointment marked as CANCELLED', 'success');
+                searchByNumber(currentLoadedAppointment.appointmentNo);
+            } else {
+                showToast(res.error || 'Failed to cancel appointment', 'error');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initSearchPage);
+    </script>
+</body>
+</html>

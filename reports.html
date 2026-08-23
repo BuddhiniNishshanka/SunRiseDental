@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Dental Clinic - Management Reports &amp; Analytics</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-container no-print">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">🦷</div>
+                <div class="brand-text">
+                    <h2>Sunrise Dental</h2>
+                    <span>Clinic Portal</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="menu-category">Operations</li>
+                <li><a href="dashboard.html"><span class="menu-icon">📊</span> Dashboard</a></li>
+                <li><a href="appointments.html"><span class="menu-icon">📅</span> Register Appointment</a></li>
+                <li><a href="search.html"><span class="menu-icon">🔍</span> Search Appointments</a></li>
+                <li><a href="billing.html"><span class="menu-icon">💳</span> Calculate &amp; Print Bill</a></li>
+
+                <li class="menu-category">Analytics &amp; Support</li>
+                <li><a href="reports.html" class="active"><span class="menu-icon">📈</span> Management Reports</a></li>
+                <li><a href="help.html"><span class="menu-icon">❓</span> Staff Help Guide</a></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar" id="userAvatar">SD</div>
+                    <div class="user-details">
+                        <h4 id="userFullName">Staff Member</h4>
+                        <span id="userRole">RECEPTIONIST</span>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()" title="Exit System">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-navbar">
+                <div class="page-title">
+                    <h1>Executive Management Reports</h1>
+                    <p>Decision-making reports powered by database stored procedures and aggregate functions</p>
+                </div>
+                <div class="top-actions">
+                    <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print Summary</button>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <!-- Doctor Workload Report (Stored Procedure: sp_GetDoctorWorkloadReport) -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2>Doctor Clinical Workload &amp; Revenue Report</h2>
+                            <p style="font-size: 0.82rem; color: var(--text-muted);">Generated dynamically using MySQL Stored Procedure <code>sp_GetDoctorWorkloadReport()</code></p>
+                        </div>
+                        <button class="btn btn-secondary btn-sm" onclick="loadDoctorWorkload()">Refresh Data</button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Doctor / Dentist Name</th>
+                                    <th>Specialization</th>
+                                    <th style="text-align: center;">Total Appointments</th>
+                                    <th style="text-align: center;">Completed</th>
+                                    <th style="text-align: center;">Pending</th>
+                                    <th style="text-align: right;">Total Revenue Generated (LKR)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="workloadTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--text-muted);">Loading workload report...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Custom Range Revenue Analytics (Stored Function: fn_CalculateTotalRevenue) -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2>Financial Revenue Range Analysis</h2>
+                            <p style="font-size: 0.82rem; color: var(--text-muted);">Computed directly via MySQL Stored Function <code>fn_CalculateTotalRevenue(startDate, endDate)</code></p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 16px; align-items: flex-end; margin-bottom: 24px; flex-wrap: wrap;">
+                        <div class="form-group" style="min-width: 180px;">
+                            <label for="revStart">From Date</label>
+                            <input type="date" id="revStart">
+                        </div>
+                        <div class="form-group" style="min-width: 180px;">
+                            <label for="revEnd">To Date</label>
+                            <input type="date" id="revEnd">
+                        </div>
+                        <button class="btn btn-primary" onclick="queryRevenue()">Execute Revenue Query</button>
+                    </div>
+
+                    <div style="background: linear-gradient(135deg, #0f172a, #1e293b); color: #ffffff; padding: 24px; border-radius: var(--radius-lg); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span style="font-size: 0.85rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em;">Calculated Period Gross Revenue</span>
+                            <h1 id="rangeRevenueVal" style="font-size: 2.2rem; color: #38bdf8; margin-top: 4px;">LKR 0.00</h1>
+                            <p id="rangeQueryDates" style="font-size: 0.85rem; color: #cbd5e1; margin-top: 4px;">Select dates and query</p>
+                        </div>
+                        <div style="font-size: 56px;">💰</div>
+                    </div>
+                </div>
+
+                <!-- Comprehensive Audit Logs Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>System Audit Log &amp; Compliance Trail</h2>
+                    </div>
+                    <div id="auditLogStream" style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; font-family: monospace; font-size: 0.85rem; max-height: 200px; overflow-y: auto;">
+                        Loading audit trail...
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        async function initReports() {
+            const today = new Date().toISOString().split('T')[0];
+            const firstOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+            document.getElementById('revStart').value = firstOfMonth;
+            document.getElementById('revEnd').value = today;
+
+            await loadDoctorWorkload();
+            await queryRevenue();
+            await loadAuditTrail();
+        }
+
+        async function loadDoctorWorkload() {
+            const res = await API.getDoctorWorkload();
+            const tbody = document.getElementById('workloadTableBody');
+            if (res.success && res.data) {
+                tbody.innerHTML = res.data.map(d => `
+                    <tr>
+                        <td><strong>${d.dentistName}</strong></td>
+                        <td>${d.specialization}</td>
+                        <td style="text-align: center;">${d.totalAppointments}</td>
+                        <td style="text-align: center;"><span class="status-chip completed">${d.completedAppointments}</span></td>
+                        <td style="text-align: center;"><span class="status-chip scheduled">${d.pendingAppointments}</span></td>
+                        <td style="text-align: right; font-weight: 700; color: var(--primary-dark);">
+                            LKR ${Number(d.totalRevenueGenerated).toLocaleString('en-US', {minimumFractionDigits: 2})}
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Failed to load doctor workload report.</td></tr>';
+            }
+        }
+
+        async function queryRevenue() {
+            const start = document.getElementById('revStart').value;
+            const end = document.getElementById('revEnd').value;
+            if (!start || !end) return;
+
+            const res = await API.getRevenueReport(start, end);
+            if (res.success && res.data) {
+                document.getElementById('rangeRevenueVal').textContent = 'LKR ' + Number(res.data.totalRevenue).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('rangeQueryDates').textContent = `Active Period: ${res.data.startDate} to ${res.data.endDate}`;
+            }
+        }
+
+        async function loadAuditTrail() {
+            const res = await API.getNotificationLogs();
+            const box = document.getElementById('auditLogStream');
+            if (res.success && res.data && res.data.length > 0) {
+                box.innerHTML = res.data.map(l => `<div>[AUDIT] ${l}</div>`).join('');
+            } else {
+                box.innerHTML = '<div>No audit events recorded yet.</div>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initReports);
+    </script>
+</body>
+</html>
