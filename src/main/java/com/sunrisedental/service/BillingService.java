@@ -139,6 +139,20 @@ public class BillingService {
         // Observer Notification
         NotificationService.notifyInvoicePaid(finalBill);
 
+        // Email Invoice to Patient
+        try {
+            Optional<Patient> patientOpt = patientDAO.findById(app.getPatientId());
+            if (patientOpt.isPresent() && patientOpt.get().getEmail() != null) {
+                String patientEmail = patientOpt.get().getEmail();
+                boolean emailSent = EmailService.getInstance().sendInvoiceEmail(patientEmail, finalBill);
+                LOGGER.info("Invoice email to patient {}: {}", patientEmail, emailSent ? "SENT" : "FAILED");
+            } else {
+                LOGGER.warn("Patient email not found for appointment {}. Skipping email.", appointmentId);
+            }
+        } catch (Exception emailEx) {
+            LOGGER.error("Email sending failed but invoice was saved: {}", emailEx.getMessage());
+        }
+
         // Security Audit Log
         auditLogDAO.logAction(new AuditLog(
                 operatorUsername != null ? operatorUsername : "system",

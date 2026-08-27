@@ -233,11 +233,11 @@ DELIMITER ;
 
 -- Seed Users (Passwords: 'admin123' and 'staff123' hashed with SHA-256)
 -- admin123 -> 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
--- staff123 -> 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+-- staff123 -> 10176e7b7b24d317acfcf8d2064cfd2f24e154f7b5a96603077d5ef813d6a6b6
 INSERT INTO users (username, password_hash, full_name, role, email) VALUES
 ('admin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'Dr. Priyanga Jayawardena (Clinic Director)', 'ADMIN', 'admin@sunrisedental.lk'),
-('reception', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Kavindi Perera (Front Desk)', 'RECEPTIONIST', 'kavindi@sunrisedental.lk'),
-('dentist_silva', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Dr. Nuwan Silva', 'DENTIST', 'nsilva@sunrisedental.lk');
+('reception', '10176e7b7b24d317acfcf8d2064cfd2f24e154f7b5a96603077d5ef813d6a6b6', 'Kavindi Perera (Front Desk)', 'RECEPTIONIST', 'kavindi@sunrisedental.lk'),
+('dentist_silva', '10176e7b7b24d317acfcf8d2064cfd2f24e154f7b5a96603077d5ef813d6a6b6', 'Dr. Nuwan Silva', 'DENTIST', 'nsilva@sunrisedental.lk');
 
 -- Seed Dentists
 INSERT INTO dentists (name, specialization, room_no, contact_no, email, consultation_fee) VALUES
