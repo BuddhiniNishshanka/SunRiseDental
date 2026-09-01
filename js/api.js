@@ -3,8 +3,10 @@
  */
 
 // Dynamically determine the context path (e.g. /project/api or /api)
-const API_BASE = window.location.pathname.includes('/project')
-    ? window.location.origin + '/project/api'
+const API_BASE = window.location.pathname.includes('/SunRiseDental')
+    ? window.location.origin + '/SunRiseDental/api'
+    : window.location.pathname.includes('/sunrise-dental')
+    ? window.location.origin + '/sunrise-dental/api'
     : window.location.origin + '/api';
 
 const API = {
