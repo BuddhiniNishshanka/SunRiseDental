@@ -264,13 +264,6 @@ taskkill /PID <PID> /F    # Replace <PID> with the actual process ID
 
 ---
 
-## 📄 Related Documents
 
-- [`TEST_PLAN_AND_TDD.md`](TEST_PLAN_AND_TDD.md) — Full test plan and TDD documentation
-- [`REPORT_CIS6003.md`](REPORT_CIS6003.md) — Project report
-- [`UML_DIAGRAMS.md`](UML_DIAGRAMS.md) — System architecture and UML diagrams
-- [`GIT_WORKFLOW_AND_CICD.md`](GIT_WORKFLOW_AND_CICD.md) — Git branching strategy and CI/CD pipeline
-
----
 
 *Cardiff Metropolitan University — CIS6003 | Sunrise Dental Clinic Management System*
